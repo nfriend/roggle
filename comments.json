@@ -1,0 +1,22 @@
+[
+    {
+        "author": "Nathan Friend",
+        "text": "This is my test comment.",
+        "id": "18f211cc-4791-49a3-bd15-d8dba0610b24"
+    },
+    {
+        "author": "Nathan Friend",
+        "text": "This is my *other* test comment",
+        "id": "3e38d186-314f-45a1-a3ee-661f740e7565"
+    },
+    {
+        "author": "Nathan",
+        "text": "Hi ___there___",
+        "id": "fda20cfe-dc39-4829-bae3-aa977845d67f"
+    },
+    {
+        "author": "Okay",
+        "text": "This is pretty `neat`",
+        "id": "18dc4177-f957-451d-a008-10735904f36d"
+    }
+]

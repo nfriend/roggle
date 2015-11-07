@@ -1,0 +1,28 @@
+.comment-author {
+	float: left;
+}
+
+.comment .delete-comment-button {
+	visibility: hidden;
+	margin-bottom: -15px;
+	color: #d9534f;
+	border: 0;
+	margin-left: 5px;
+	font-size: 15px;
+}
+
+.comment:hover .delete-comment-button {
+	visibility: visible;
+}
+
+.comment-caret {
+	float: left;
+	margin-right: 4px;
+	margin-top: 3px;
+	margin-left: 10px;
+	color: #337ab7;
+}
+
+.comment-content {
+	float: left;
+}
