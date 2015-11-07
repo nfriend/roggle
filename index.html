@@ -2,25 +2,83 @@
 <html>
 
 <head>
-    <title>Chatter</title>
+    <title>Roggle</title>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    
+
     <link href="./styles/lib/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="./styles/chatter.css" type="text/css" />
+    <link rel="stylesheet" href="./styles/roggle.css" type="text/css" />
 </head>
 
 <body>
-    <div class="container" id="content"></div>
+    <div class="container">
+        <h1>Roggle</h1>
+        <hr />
+        <div class="row roggle-row">
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
 
-    <script src="./scripts/lib/react.js"></script>
-    <script src="./scripts/lib/react-dom.js"></script>
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+            <div class="col-xs-3 roggle-cell">
+                <div class="roggle-die"><i class="fa fa-smile-o"></i></div>
+            </div>
+        </div>
+        <div id="dice-container"></div>
+        <hr />
+        <div class="row shake-button-container">
+            <button id="shake-button" class="btn btn-default btn-lg">Shake it up!</button>
+        </div>
+    </div>
+
     <script src="./scripts/lib/jquery-2.1.4.min.js"></script>
-    <script src="./scripts/lib/marked.min.js"></script>
-    <script src="./scripts/chatter.js"></script>
+    <script src="./scripts/roggle.js"></script>
 </body>
 
 </html>

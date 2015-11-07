@@ -4,6 +4,6 @@
 		"sourceMap": true,
 		"watch": true,
 		"jsx": "react",
-		"out": "scripts/chatter.js"
+		"out": "scripts/roggle.js"
 	}
 }
