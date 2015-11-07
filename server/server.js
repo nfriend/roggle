@@ -2,7 +2,7 @@
 
 var WebSocketServer = require('websocket').server;
 var http = require('http');
-var clients = [];
+var gameToClients = {};
 var allowedOrigins = [/^http:\/\/localhost/, /^http:\/\/127.0.0.1/, /^http:\/\/nathanfriend.com/, /^http:\/\/www.nathanfriend.com/, /^http:\/\/nathanfriend.io/, /^http:\/\/www.nathanfriend.io/, /^http:\/\/dev.nathanfriend.com/, /^http:\/\/dev.nathanfriend.io/, /^http:\/\/nathanfriend.cloudapp.net/, /^http:\/\/www.nathanfriend.cloudapp.net/];
 
 var server = http.createServer(function (request, response) {
@@ -28,32 +28,38 @@ wsServer.on('request', function (request) {
     }
 
     var connection = request.accept('roggle-protocol', request.origin);
-    clients.push(connection);
     console.log((new Date()) + ' Connection accepted.');
 
     connection.on('message', function (message) {
         if (message.type === 'utf8') {
             console.log('Received Message: ' + message.utf8Data);
+            var parsedMessage = JSON.parse(message.utf8Data); 
 
-            clients.forEach(function (element, index, array) {
-                if (element !== connection) {
-                    element.sendUTF(message.utf8Data);
+            if (parsedMessage.messageType === 'join') {
+                if (!gameToClients[parsedMessage.gameId]) {
+                    gameToClients[parsedMessage.gameId]  = [];
                 }
-            });
+                gameToClients[parsedMessage.gameId].push(connection);
+                connection.gameId = parsedMessage.gameId;
+            } else {
+                gameToClients[connection.gameId].forEach(function (client, index, array) {
+                    if (client !== connection) {
+                        client.sendUTF(message.utf8Data);
+                    }
+                });
+            }
         }
         else if (message.type === 'binary') {
-            console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
-
-            clients.forEach(function (element, index, array) {
-                if (element !== connection) {
-                    element.sendBytes(message.binaryData);
-                }
-            });
+            console.log('recieved unsupported binary message type. message ignored.');
         }
     });
 
     connection.on('close', function (reasonCode, description) {
-        clients.splice(clients.indexOf(connection), 1);
+        var gameClients = gameToClients[connection.gameId]; 
+        gameClients.splice(gameClients.indexOf(connection), 1);
+        if (gameClients.length === 0) {
+            delete gameClients[connection.gameId];
+        }
         console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
     });
 });

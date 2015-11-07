@@ -166,9 +166,20 @@ var Roggle;
     var websocketService = new Roggle.WebsocketService();
     var dieShuffler = new Roggle.DieShuffler();
     var audio = new Audio('./audio/diceroll.mp3');
+    var gameIdUrlRegex = /([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$)/i;
     websocketService.connect();
     websocketService.on('receive', function (data) {
         setDice(data);
+    });
+    websocketService.on('connect', function () {
+        var gameIdMatches = gameIdUrlRegex.exec(window.location.href);
+        var gameId = gameIdMatches ? gameIdMatches[0] : getGuid();
+        console.log('gameId: ' + gameId);
+        websocketService.send({
+            messageType: 'join',
+            gameId: gameId
+        });
+        window.history.pushState(null, "", "#/" + gameId);
     });
     $('#shake-button').click(function () {
         var randomizedDice = dieShuffler.Randomize();
@@ -180,6 +191,13 @@ var Roggle;
             $(elem).html(dice[i]);
         });
         audio.play();
+    }
+    // from http://stackoverflow.com/a/2117523/1063392
+    function getGuid() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
     }
 })(Roggle || (Roggle = {}));
 //# sourceMappingURL=roggle.js.map
