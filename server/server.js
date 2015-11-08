@@ -33,11 +33,15 @@ wsServer.on('request', function (request) {
     connection.on('message', function (message) {
         if (message.type === 'utf8') {
             console.log('Received Message: ' + message.utf8Data);
-            var parsedMessage = JSON.parse(message.utf8Data); 
+            var parsedMessage = JSON.parse(message.utf8Data);
 
             if (parsedMessage.messageType === 'join') {
                 if (!gameToClients[parsedMessage.gameId]) {
-                    gameToClients[parsedMessage.gameId]  = [];
+                    gameToClients[parsedMessage.gameId] = [];
+
+                    connection.sendUTF(JSON.stringify({
+                        messageType: 'initiate'
+                    }));
                 }
                 gameToClients[parsedMessage.gameId].push(connection);
                 connection.gameId = parsedMessage.gameId;
@@ -55,7 +59,7 @@ wsServer.on('request', function (request) {
     });
 
     connection.on('close', function (reasonCode, description) {
-        var gameClients = gameToClients[connection.gameId]; 
+        var gameClients = gameToClients[connection.gameId];
         gameClients.splice(gameClients.indexOf(connection), 1);
         if (gameClients.length === 0) {
             delete gameClients[connection.gameId];

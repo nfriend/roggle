@@ -160,44 +160,111 @@ var Roggle;
     })();
     Roggle.WebsocketService = WebsocketService;
 })(Roggle || (Roggle = {}));
-/// <reference path="../typings/jquery/jquery" />
 var Roggle;
 (function (Roggle) {
-    var websocketService = new Roggle.WebsocketService();
-    var dieShuffler = new Roggle.DieShuffler();
-    var audio = new Audio('./audio/diceroll.mp3');
-    var gameIdUrlRegex = /([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$)/i;
-    websocketService.connect();
-    websocketService.on('receive', function (data) {
-        setDice(data);
-    });
-    websocketService.on('connect', function () {
-        var gameIdMatches = gameIdUrlRegex.exec(window.location.href);
-        var gameId = gameIdMatches ? gameIdMatches[0] : getGuid();
-        console.log('gameId: ' + gameId);
-        websocketService.send({
-            messageType: 'join',
-            gameId: gameId
-        });
-        window.history.pushState(null, "", "#/" + gameId);
-    });
-    $('#shake-button').click(function () {
-        var randomizedDice = dieShuffler.Randomize();
-        setDice(randomizedDice);
-        websocketService.send(randomizedDice);
-    });
-    function setDice(dice) {
-        $('.roggle-die').each(function (i, elem) {
-            $(elem).html(dice[i]);
-        });
-        audio.play();
+    // from http://stackoverflow.com/a/1527820/1063392
+    /**
+    * Returns a random number between min (inclusive) and max (exclusive)
+    */
+    function GetRandomArbitrary(min, max) {
+        return Math.random() * (max - min) + min;
     }
-    // from http://stackoverflow.com/a/2117523/1063392
-    function getGuid() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-            return v.toString(16);
-        });
+    Roggle.GetRandomArbitrary = GetRandomArbitrary;
+    // from http://stackoverflow.com/a/1527820/1063392
+    /**
+     * Returns a random integer between min (inclusive) and max (inclusive)
+     * Using Math.round() will give you a non-uniform distribution!
+     */
+    function GetRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
     }
+    Roggle.GetRandomInt = GetRandomInt;
+})(Roggle || (Roggle = {}));
+/// <reference path="../utility" />
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+var Roggle;
+(function (Roggle) {
+    var Die = (function (_super) {
+        __extends(Die, _super);
+        function Die(props) {
+            _super.call(this, props);
+            this.allLetters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Qu", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+            this.state = {
+                displayLetter: props.letter
+            };
+            this.animateLetter();
+        }
+        Die.prototype.animateLetter = function () {
+            var _this = this;
+            var scheduleDisplayLetterChange = function (i, isFinalLetter) {
+                var timeToWait = isFinalLetter ? 1423 + Math.random() * 250 : (Math.pow(1.02, i * 3) - 1) * 1000 + ((Math.random() - .5) * 250);
+                var letterToDisplay = isFinalLetter ? _this.props.letter : _this.allLetters[Roggle.GetRandomInt(0, 25)];
+                setTimeout(function () {
+                    _this.setState({
+                        displayLetter: letterToDisplay
+                    });
+                }, timeToWait);
+            };
+            for (var i = 0; i < 15; i++) {
+                scheduleDisplayLetterChange(i, i === 14);
+            }
+        };
+        Die.prototype.componentWillReceiveProps = function (nextProps) {
+            this.animateLetter();
+            console.log('here');
+        };
+        Die.prototype.render = function () {
+            if (!this.state) {
+                var content = null;
+            }
+            else {
+                var content = this.state.displayLetter;
+            }
+            return (React.createElement("div", {"className": "col-xs-3 roggle-cell"}, React.createElement("div", {"className": "roggle-die"}, content)));
+        };
+        return Die;
+    })(React.Component);
+    Roggle.Die = Die;
+})(Roggle || (Roggle = {}));
+var Roggle;
+(function (Roggle) {
+    var DiceContainer = (function (_super) {
+        __extends(DiceContainer, _super);
+        function DiceContainer(props) {
+            var _this = this;
+            _super.call(this, props);
+            this.buttonClicked = function () {
+                console.log('clicked');
+                _this.setState({
+                    letters: ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"]
+                });
+            };
+            this.state = {
+                letters: props.letters
+            };
+        }
+        DiceContainer.prototype.render = function () {
+            var createDie = function (letter, index) {
+                return React.createElement(Roggle.Die, {"letter": letter});
+            };
+            return (React.createElement("div", {"className": "row roggle-row"}, this.state.letters.map(createDie), React.createElement("button", {"onClick": this.buttonClicked}, "Change to Z's")));
+        };
+        return DiceContainer;
+    })(React.Component);
+    Roggle.DiceContainer = DiceContainer;
+})(Roggle || (Roggle = {}));
+/// <reference path="../typings/react/react" />
+/// <reference path="../typings/react-dom/react-dom" />
+/// <reference path="../typings/jquery/jquery" />
+/// <reference path="./components/Die" />
+/// <reference path="./components/DiceContainer" />
+var Roggle;
+(function (Roggle) {
+    var letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"];
+    ReactDOM.render(React.createElement(Roggle.DiceContainer, {"letters": letters}), document.getElementById('react-container'));
 })(Roggle || (Roggle = {}));
 //# sourceMappingURL=roggle.js.map
