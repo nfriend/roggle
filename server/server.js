@@ -36,19 +36,33 @@ wsServer.on('request', function (request) {
             var parsedMessage = JSON.parse(message.utf8Data);
 
             if (parsedMessage.messageType === 'join') {
+
                 if (!gameToClients[parsedMessage.gameId]) {
+                    // if this is a new game
+                    
                     gameToClients[parsedMessage.gameId] = [];
 
                     connection.sendUTF(JSON.stringify({
                         messageType: 'initiate'
                     }));
+                } else {
+                    // if this client is joining an existing game
+                    
+                    connection.sendUTF(JSON.stringify({
+                        messageType: 'setDice',
+                        letters: gameToClients[parsedMessage.gameId].letters
+                    }));
                 }
                 gameToClients[parsedMessage.gameId].push(connection);
                 connection.gameId = parsedMessage.gameId;
-            } else {
+            } else if (parsedMessage.messageType === 'setDice') {
+                gameToClients[connection.gameId].letters = parsedMessage.letters;
                 gameToClients[connection.gameId].forEach(function (client, index, array) {
                     if (client !== connection) {
-                        client.sendUTF(message.utf8Data);
+                        client.sendUTF(JSON.stringify({
+                            messageType: 'setDice',
+                            letters: parsedMessage.letters
+                        }));
                     }
                 });
             }
@@ -60,9 +74,12 @@ wsServer.on('request', function (request) {
 
     connection.on('close', function (reasonCode, description) {
         var gameClients = gameToClients[connection.gameId];
-        gameClients.splice(gameClients.indexOf(connection), 1);
-        if (gameClients.length === 0) {
-            delete gameClients[connection.gameId];
+
+        if (gameClients) {
+            gameClients.splice(gameClients.indexOf(connection), 1);
+            if (gameClients.length === 0) {
+                delete gameClients[connection.gameId];
+            }
         }
         console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
     });

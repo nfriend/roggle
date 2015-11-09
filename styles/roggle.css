@@ -2,6 +2,10 @@
 	text-align: center;
 }
 
+.title-container > * {
+	float: left;
+}
+
 .roggle-row {
 	width: 400px;
 	left: 50%;
@@ -26,14 +30,26 @@
 	font-weight: bold;
 }
 
-.roggle-cell > * {
-	
+.share-link-title {
+	padding-top: 18px;
 }
 
-#shake-button {
-	
+.share-link, .share-link-title {
+	color: #aaaaaa;
+	margin-left: 20px;
+	float: left;
+}
+
+.share-link button {
+	margin-top: -3px;
+	color: #777777;
 }
 
 .shake-button-container {
 	text-align: center;
+}
+
+.cleared {
+	flaot: none !important;
+	clear: both !important;
 }

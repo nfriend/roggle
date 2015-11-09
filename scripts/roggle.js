@@ -179,6 +179,14 @@ var Roggle;
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
     Roggle.GetRandomInt = GetRandomInt;
+    // from http://stackoverflow.com/a/2117523/1063392
+    function GetGuid() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+    Roggle.GetGuid = GetGuid;
 })(Roggle || (Roggle = {}));
 /// <reference path="../utility" />
 var __extends = (this && this.__extends) || function (d, b) {
@@ -196,7 +204,6 @@ var Roggle;
             this.state = {
                 displayLetter: props.letter
             };
-            this.animateLetter();
         }
         Die.prototype.animateLetter = function () {
             var _this = this;
@@ -214,8 +221,10 @@ var Roggle;
             }
         };
         Die.prototype.componentWillReceiveProps = function (nextProps) {
-            this.animateLetter();
-            console.log('here');
+            var _this = this;
+            setTimeout(function () {
+                _this.animateLetter();
+            }, 0);
         };
         Die.prototype.render = function () {
             if (!this.state) {
@@ -235,36 +244,113 @@ var Roggle;
     var DiceContainer = (function (_super) {
         __extends(DiceContainer, _super);
         function DiceContainer(props) {
-            var _this = this;
             _super.call(this, props);
-            this.buttonClicked = function () {
-                console.log('clicked');
-                _this.setState({
-                    letters: ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"]
-                });
-            };
-            this.state = {
-                letters: props.letters
-            };
         }
         DiceContainer.prototype.render = function () {
+            var letters = this.props.letters || [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null];
             var createDie = function (letter, index) {
-                return React.createElement(Roggle.Die, {"letter": letter});
+                return React.createElement(Roggle.Die, {"letter": letter, "key": index});
             };
-            return (React.createElement("div", {"className": "row roggle-row"}, this.state.letters.map(createDie), React.createElement("button", {"onClick": this.buttonClicked}, "Change to Z's")));
+            return (React.createElement("div", {"className": "row roggle-row"}, letters.map(createDie)));
         };
         return DiceContainer;
     })(React.Component);
     Roggle.DiceContainer = DiceContainer;
+})(Roggle || (Roggle = {}));
+var Roggle;
+(function (Roggle) {
+    var RoggleContainer = (function (_super) {
+        __extends(RoggleContainer, _super);
+        function RoggleContainer(props) {
+            var _this = this;
+            _super.call(this, props);
+            this.webSocketService = new Roggle.WebsocketService();
+            this.dieShuffler = new Roggle.DieShuffler();
+            this.audio = new Audio('./audio/diceroll.mp3');
+            this.gameIdUrlRegex = /([0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$)/i;
+            this.onWebsocketServiceConnect = function () {
+                var gameIdMatches = _this.gameIdUrlRegex.exec(window.location.href);
+                var gameId = gameIdMatches ? gameIdMatches[1] : Roggle.GetGuid();
+                _this.webSocketService.send({
+                    messageType: 'join',
+                    gameId: gameId
+                });
+                window.history.pushState(null, "", "#/" + gameId);
+                $(window).trigger('roggle:joinedgame');
+            };
+            this.onWebSocketServiceReceive = function (message) {
+                console.log('messageReceived: ', message);
+                if (message.messageType === 'setDice') {
+                    console.log('setDice: ', message.letters);
+                    _this.setDice(message.letters);
+                }
+                else if (message.messageType === 'initiate') {
+                    console.log('initiate');
+                    _this.shakeItUp();
+                }
+            };
+            this.setDice = function (newLetters) {
+                console.log('setting: ', newLetters);
+                _this.audio.play();
+                _this.setState({
+                    letters: newLetters
+                });
+            };
+            this.shakeItUp = function () {
+                var newLetters = _this.dieShuffler.Randomize();
+                _this.setDice(newLetters);
+                _this.webSocketService.send({
+                    messageType: 'setDice',
+                    letters: newLetters
+                });
+            };
+            this.state = {
+                letters: null
+            };
+            this.webSocketService.on('connect', this.onWebsocketServiceConnect);
+            this.webSocketService.on('receive', this.onWebSocketServiceReceive);
+            this.webSocketService.connect();
+        }
+        RoggleContainer.prototype.render = function () {
+            return (React.createElement("div", {"className": "container"}, React.createElement(Roggle.RoggleHeader, null), React.createElement("hr", null), React.createElement(Roggle.DiceContainer, {"letters": this.state.letters}), React.createElement("br", null), React.createElement("br", null), React.createElement("button", {"className": "btn btn-lg btn-default", "onClick": this.shakeItUp}, "Shake it up!")));
+        };
+        return RoggleContainer;
+    })(React.Component);
+    Roggle.RoggleContainer = RoggleContainer;
+})(Roggle || (Roggle = {}));
+var Roggle;
+(function (Roggle) {
+    var RoggleHeader = (function (_super) {
+        __extends(RoggleHeader, _super);
+        function RoggleHeader(props) {
+            var _this = this;
+            _super.call(this, props);
+            this.state = {
+                currentUrl: null
+            };
+            $(window).on('roggle:joinedgame', function () {
+                console.log("hash changed!");
+                _this.setState({
+                    currentUrl: window.location.href
+                });
+            });
+        }
+        RoggleHeader.prototype.render = function () {
+            return (React.createElement("div", null, React.createElement("div", {"className": "title-container"}, React.createElement("h1", null, "Roggle"), React.createElement("div", null, React.createElement("div", {"className": "share-link-title"}, "Invite people to this gameroom by sharing this URL: "), React.createElement("div", {"className": "cleared"}), React.createElement("div", {"className": "share-link"}, this.state.currentUrl, "  "))), React.createElement("div", {"className": "cleared"})));
+        };
+        return RoggleHeader;
+    })(React.Component);
+    Roggle.RoggleHeader = RoggleHeader;
 })(Roggle || (Roggle = {}));
 /// <reference path="../typings/react/react" />
 /// <reference path="../typings/react-dom/react-dom" />
 /// <reference path="../typings/jquery/jquery" />
 /// <reference path="./components/Die" />
 /// <reference path="./components/DiceContainer" />
+/// <reference path="./components/RoggleContainer" />
+/// <reference path="./components/RoggleHeader" />
 var Roggle;
 (function (Roggle) {
-    var letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"];
-    ReactDOM.render(React.createElement(Roggle.DiceContainer, {"letters": letters}), document.getElementById('react-container'));
+    ReactDOM.render(React.createElement(Roggle.RoggleContainer, null), document.getElementById('react-container'));
 })(Roggle || (Roggle = {}));
 //# sourceMappingURL=roggle.js.map

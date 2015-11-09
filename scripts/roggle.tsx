@@ -3,12 +3,12 @@
 /// <reference path="../typings/jquery/jquery" />
 /// <reference path="./components/Die" />
 /// <reference path="./components/DiceContainer" />
+/// <reference path="./components/RoggleContainer" />
+/// <reference path="./components/RoggleHeader" />
 
 module Roggle {
-	let letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P"];
-	
 	ReactDOM.render(
-		<DiceContainer letters={letters} />,
+		<RoggleContainer />,
 		document.getElementById('react-container')
 	);
 }

@@ -1,39 +1,28 @@
 module Roggle {
 
 	export interface DiceContainerProps {
-		letters: Array<string>;
+		letters?: Array<string>;
 		children?: any;
 	}
 	
 	export interface DiceContainerState {
-		letters: Array<string>;
 	}
 
-	export class DiceContainer extends React.Component<DiceContainerProps, DiceContainerProps> {
+	export class DiceContainer extends React.Component<DiceContainerProps, DiceContainerState> {
 		constructor(props: DiceContainerProps) {
 			super(props);
-			
-			this.state = {
-				letters: props.letters
-			};
-		}
-		
-		buttonClicked = () => {
-			console.log('clicked');
-			this.setState({
-				letters: ["Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z", "Z"]
-			});
 		}
 
 		render() {
+			let letters = this.props.letters || [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+			
 			let createDie = (letter: string, index: number) => {
-				return <Die letter={letter} />
+				return <Die letter={letter} key={index} />
 			};
 			
 			return (
 				<div className="row roggle-row">
-					{this.state.letters.map(createDie) }
-					<button onClick={this.buttonClicked}>Change to Z's</button>
+					{ letters.map(createDie) }
 				</div>
 			);
 		}
