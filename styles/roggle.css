@@ -54,6 +54,28 @@
 	clear: both !important;
 }
 
+.media-link {
+	display: block;
+	float: right;
+	color: #c0c0c0;
+	font-size: 30px;
+	margin-right: 10px;
+	margin-bottom: -10px;
+}
+
+.media-link:hover {
+	color: #777777;
+}
+
+.media-link-container {
+	float: right;
+	margin-top: 20px;
+}
+
+/*.media-link .fa-envelope {
+	font-size: 25px;
+}*/
+
 @media (max-width: 430px) {
 	.roggle-row {
 		width: 250px;
@@ -68,5 +90,20 @@
 	
 	.roggle-die {
 		font-size: 37px;
+	}
+	
+	
+}
+
+@media (max-width: 992px) and (min-width: 769px) {
+	.media-link:not(.github-link):not(.email-link) {
+		display: none;
+	}
+}
+
+
+@media (max-width: 768px){
+	.media-link {
+		display: none;
 	}
 }
