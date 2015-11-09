@@ -53,3 +53,20 @@
 	flaot: none !important;
 	clear: both !important;
 }
+
+@media (max-width: 430px) {
+	.roggle-row {
+		width: 250px;
+		margin-left: -125px;
+	}
+	
+	.roggle-cell {
+		height: 59px;
+		margin-bottom: 4px;
+		padding: 2px;
+	}
+	
+	.roggle-die {
+		font-size: 37px;
+	}
+}
