@@ -15,9 +15,11 @@ module Roggle {
 
 		connect = () => {
 			if (document.location.hostname === 'nathanfriend.com' || document.location.hostname === 'nathanfriend.io' || document.location.hostname === 'nathanfriend.cloudapp.net') {
-                this.connection = new WebSocket('ws://nathanfriend.io:18734/roggle/server', 'roggle-protocol');
+				this.connection = new WebSocket('wss://nathanfriend.io:18734/roggle/server', 'roggle-protocol')
+			} else if (document.location.hostname === '13.84.128.73') {
+				this.connection = new WebSocket('ws://13.84.128.73:18734/roggle/server', 'roggle-protocol');
             } else if (document.location.hostname === 'dev.nathanfriend.com' || document.location.hostname === 'dev.nathanfriend.io' || document.location.hostname === 'dev.nathanfriend.cloudapp.net') {
-                this.connection = new WebSocket('ws://dev.nathanfriend.io:18734/roggle/server', 'roggle-protocol');
+                this.connection = new WebSocket('wss://dev.nathanfriend.io:18734/roggle/server', 'roggle-protocol');
             } else {
                 this.connection = new WebSocket('ws://127.0.0.1:18734', 'roggle-protocol');
             }
