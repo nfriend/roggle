@@ -1,9 +1,10 @@
 {
     "name": "@nathanfriend/roggle",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "All the build artifacts needed to run Roggle",
     "scripts": {
-        "build": "tsc"
+        "build": "tsc",
+        "server": "node server/server.js"
     },
     "repository": {
         "type": "git",
