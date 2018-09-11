@@ -1,7 +1,7 @@
 'use strict';
 
 var WebSocketServer = require('websocket').server;
-var https = require('https');
+var http = require('http');
 var gameToClients = {};
 var allowedOrigins = [
     /^https?:\/\/localhost/, 
@@ -17,7 +17,7 @@ var allowedOrigins = [
     /^https?:\/\/www.nathanfriend.cloudapp.net/
 ];
 
-var server = https.createServer(function (request, response) {
+var server = http.createServer(function (request, response) {
     console.log((new Date()) + ' Received request for ' + request.url);
     response.writeHead(404);
     response.end();
