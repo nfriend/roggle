@@ -285,9 +285,9 @@ var Roggle;
                 var gameId = gameIdMatches ? gameIdMatches[1] : Roggle.GetGuid();
                 _this.webSocketService.send({
                     messageType: 'join',
-                    gameId: gameId
+                    gameId: gameId,
                 });
-                window.history.pushState(null, "", "#/" + gameId);
+                window.history.pushState(null, '', '#/' + gameId);
                 $(window).trigger('roggle:joinedgame');
             };
             _this.onWebSocketServiceReceive = function (message) {
@@ -303,9 +303,13 @@ var Roggle;
             };
             _this.setDice = function (newLetters) {
                 console.log('setting: ', newLetters);
-                _this.audio.play();
+                _this.audio
+                    .play()
+                    .catch(function (err) {
+                    return console.log('Browser has autoplay disabled; skipping sound effect.');
+                });
                 _this.setState({
-                    letters: newLetters
+                    letters: newLetters,
                 });
             };
             _this.shakeItUp = function () {
@@ -313,11 +317,11 @@ var Roggle;
                 _this.setDice(newLetters);
                 _this.webSocketService.send({
                     messageType: 'setDice',
-                    letters: newLetters
+                    letters: newLetters,
                 });
             };
             _this.state = {
-                letters: null
+                letters: null,
             };
             _this.webSocketService.on('connect', _this.onWebsocketServiceConnect);
             _this.webSocketService.on('receive', _this.onWebSocketServiceReceive);

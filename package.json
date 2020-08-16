@@ -1,6 +1,6 @@
 {
     "name": "@nathanfriend/roggle",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "All the build artifacts needed to run Roggle",
     "scripts": {
         "build": "tsc",
@@ -8,13 +8,13 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/nfriend/roggle.git"
+        "url": "git+https://gitlab.com/nfriend/roggle.git"
     },
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/nfriend/roggle/issues"
+        "url": "https://gitlab.com/nfriend/roggle/issues"
     },
-    "homepage": "https://github.com/nfriend/roggle#readme",
+    "homepage": "https://gitlab.com/nfriend/roggle#readme",
     "dependencies": {
         "websocket": "^1.0.26"
     },
